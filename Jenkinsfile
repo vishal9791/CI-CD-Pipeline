@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: "${REPO_URL}", branch: 'master'
+                git url: "${REPO_URL}", branch: 'main'
             }
         }
         stage('Build') {
