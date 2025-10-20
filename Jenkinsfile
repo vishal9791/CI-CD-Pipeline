@@ -1,52 +1,39 @@
 pipeline {
     agent any
-
     environment {
-        // Example: define environment variables here
-        APP_NAME = "django-todo-cicd"
+        REPO_URL = 'https://github.com/vishal9791/CI-CD-Pipeline.git'
     }
-
     stages {
         stage('Checkout') {
             steps {
-                echo "Pulling latest code from GitHub..."
-                git branch: 'main', url: 'https://github.com/vishal9791/CI-CD-Pipeline.git'
+                git url: "${REPO_URL}", branch: 'main'
             }
         }
-
         stage('Build') {
             steps {
-                echo "Building application..."
-                // Example: for Maven or Node.js
-                sh 'mvn clean package' // or 'npm install'
+                sh 'echo "Building the project..."'
+                // Add your build commands here
             }
         }
-
         stage('Test') {
             steps {
-                echo "Running tests..."
-                sh 'mvn test' // or 'npm test'
+                sh 'echo "Running tests..."'
+                // Add your test commands here
             }
         }
-
         stage('Deploy') {
             steps {
-                echo "Deploying application..."
-                // Example: Copy files to EC2 or run Docker
-                sh '''
-                scp -i /path/to/key.pem target/myapp.jar ec2-user@<EC2_IP>:/home/ec2-user/
-                ssh -i /path/to/key.pem ec2-user@<EC2_IP> "java -jar /home/ec2-user/myapp.jar &"
-                '''
+                sh 'echo "Deploying the project..."'
+                // Add your deployment commands here
             }
         }
     }
-
     post {
         success {
-            echo '✅ Deployment successful!'
+            echo 'Build, Test, and Deploy succeeded!'
         }
         failure {
-            echo '❌ Pipeline failed. Please check logs.'
+            echo 'Build, Test, or Deploy failed.'
         }
     }
 }
