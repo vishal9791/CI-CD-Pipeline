@@ -1,39 +1,48 @@
 pipeline {
     agent any
+
     environment {
-        REPO_URL = 'https://github.com/vishal9791/CI-CD-Pipeline.git'
+        DEPLOY_DIR = "/var/www/myapp"
     }
+
     stages {
         stage('Checkout') {
             steps {
-                git url: "${REPO_URL}", branch: 'main'
+                git branch: 'main', url: 'https://github.com/vishal9791/CI-CD-Pipeline.git
             }
         }
+
         stage('Build') {
             steps {
-                sh 'echo "Building the project..."'
-                // Add your build commands here
+                sh 'npm install'
             }
         }
+
         stage('Test') {
             steps {
-                sh 'echo "Running tests..."'
-                // Add your test commands here
+                sh 'npm test'
             }
         }
+
         stage('Deploy') {
             steps {
-                sh 'echo "Deploying the project..."'
-                // Add your deployment commands here
+                sshagent(['deploy-key']) {
+                    sh '''
+                    rm -rf ${DEPLOY_DIR}/*
+                    cp -r * ${DEPLOY_DIR}/
+                    pm2 restart all || pm2 start app.js
+                    '''
+                }
             }
         }
     }
+
     post {
         success {
-            echo 'Build, Test, and Deploy succeeded!'
+            echo '✅ Deployment successful!'
         }
         failure {
-            echo 'Build, Test, or Deploy failed.'
+            echo '❌ Build failed!'
         }
     }
 }
